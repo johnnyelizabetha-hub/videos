@@ -565,13 +565,29 @@
 
       function formatDateRel(iso) {
         if (!iso) return '';
-        var date = new Date(iso), now = new Date();
-        var diff = Math.ceil(Math.abs(now - date) / (864e5));
-        if (diff <= 1) return 'Yesterday';
-        if (diff < 7) return diff + ' days ago';
-        if (diff < 30) return Math.floor(diff / 7) + ' weeks ago';
-        if (diff < 365) return Math.floor(diff / 30) + ' months ago';
-        return Math.floor(diff / 365) + ' years ago';
+        var date = new Date(iso);
+        if (isNaN(date.getTime())) return '';
+        var ms = Date.now() - date.getTime();
+        if (ms < 0) ms = 0;
+        var sec = Math.floor(ms / 1000);
+        var min = Math.floor(sec / 60);
+        var hr = Math.floor(min / 60);
+        var days = Math.floor(hr / 24);
+        if (sec < 60) return 'Just now';
+        if (min < 60) return min === 1 ? '1 minute ago' : min + ' minutes ago';
+        if (hr < 24) return hr === 1 ? '1 hour ago' : hr + ' hours ago';
+        if (days === 1) return 'Yesterday';
+        if (days < 7) return days + ' days ago';
+        if (days < 30) {
+          var weeks = Math.floor(days / 7);
+          return weeks === 1 ? '1 week ago' : weeks + ' weeks ago';
+        }
+        if (days < 365) {
+          var months = Math.floor(days / 30);
+          return months === 1 ? '1 month ago' : months + ' months ago';
+        }
+        var years = Math.floor(days / 365);
+        return years === 1 ? '1 year ago' : years + ' years ago';
       }
 
       async function fetchSigned(fileKey) {
