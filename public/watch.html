@@ -357,6 +357,7 @@
     <p>© {{SITE_NAME}} · 18+ only</p>
   </footer>
 
+  <script src="/js/purchase-toasts.js"></script>
   <script src="/js/usd-zar.js"></script>
   <script>
     (function () {
@@ -610,6 +611,17 @@
         var res = await fetch('/api/videos/' + encodeURIComponent(id));
         if (!res.ok) { document.getElementById('loading-state').hidden = true; document.getElementById('error-state').hidden = false; return; }
         showVideo((await res.json()).video);
+        if (typeof PurchaseToasts !== 'undefined') {
+          fetch('/api/videos').then(function (r) {
+            return r.ok ? r.json() : { videos: [] };
+          }).then(function (pack) {
+            var videos = pack.videos || [];
+            if (currentVideo) videos.push(currentVideo);
+            PurchaseToasts.start({ videos: videos });
+          }).catch(function () {
+            PurchaseToasts.start({ videos: currentVideo ? [currentVideo] : [] });
+          });
+        }
       }
       boot().catch(function (e) {
         document.getElementById('loading-state').hidden = true;
