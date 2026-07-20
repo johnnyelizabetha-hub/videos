@@ -79,18 +79,18 @@
       '.purchase-toast{' +
       'position:fixed;left:1rem;bottom:1rem;z-index:99990;' +
       'max-width:min(360px,calc(100vw - 2rem));display:flex;align-items:flex-start;gap:0.65rem;' +
-      'padding:0.85rem 1rem;border-radius:12px;background:#fff;border:1px solid #e5e7eb;' +
-      'box-shadow:0 16px 40px rgba(17,24,39,0.14);transform:translateY(120%);opacity:0;' +
+      'padding:0.85rem 1rem;border-radius:12px;background:#141418;border:1px solid rgba(255,255,255,0.1);' +
+      'box-shadow:0 16px 40px rgba(0,0,0,0.45);transform:translateY(120%);opacity:0;' +
       'transition:transform .45s cubic-bezier(.22,1,.36,1),opacity .45s cubic-bezier(.22,1,.36,1);' +
       'pointer-events:none}' +
       '.purchase-toast.show{transform:translateY(0);opacity:1}' +
       '.purchase-toast.hide{transform:translateY(12px);opacity:0}' +
       '.purchase-toast-dot{flex-shrink:0;width:10px;height:10px;margin-top:.35rem;border-radius:50%;' +
-      'background:#16a34a;box-shadow:0 0 10px rgba(22,163,74,.45);animation:purchase-toast-pulse 1.4s ease-in-out infinite}' +
+      'background:#34d399;box-shadow:0 0 10px rgba(52,211,153,.45);animation:purchase-toast-pulse 1.4s ease-in-out infinite}' +
       '@keyframes purchase-toast-pulse{0%,100%{opacity:1}50%{opacity:.45}}' +
-      '.purchase-toast-body{flex:1;min-width:0;font-size:.78rem;line-height:1.45;color:#4b5563}' +
-      '.purchase-toast-who{display:block;font-weight:700;color:#111827;margin-bottom:.12rem}' +
-      '.purchase-toast-msg em{font-style:normal;color:#0b6bcb;font-weight:700}' +
+      '.purchase-toast-body{flex:1;min-width:0;font-size:.78rem;line-height:1.45;color:#9ca3af}' +
+      '.purchase-toast-who{display:block;font-weight:700;color:#f4f4f5;margin-bottom:.12rem}' +
+      '.purchase-toast-msg em{font-style:normal;color:#00aff0;font-weight:700}' +
       '.purchase-toast-time{flex-shrink:0;font-size:.62rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}' +
       '@media (max-width:480px){.purchase-toast{left:.65rem;right:.65rem;max-width:none}}';
     document.head.appendChild(style);

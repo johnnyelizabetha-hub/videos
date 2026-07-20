@@ -8,20 +8,34 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #0b6bcb;
-      --primary-hover: #0958a8;
-      --bg: #ffffff;
-      --surface: #f7f8fa;
-      --text: #111827;
-      --muted: #6b7280;
-      --stroke: #e5e7eb;
-      --danger: #dc2626;
+      --primary: #00aff0;
+      --primary-hover: #0095d4;
+      --bg: #0a0a0c;
+      --surface: #141418;
+      --surface-hover: #1c1c22;
+      --text: #f4f4f5;
+      --muted: #9ca3af;
+      --stroke: rgba(255, 255, 255, 0.08);
+      --stroke-hover: rgba(255, 255, 255, 0.14);
+      --danger: #f87171;
+      --success: #34d399;
+      --primary-soft: rgba(0, 175, 240, 0.12);
+      --primary-border: rgba(0, 175, 240, 0.28);
+      --info-bg: rgba(0, 175, 240, 0.1);
+      --info-border: rgba(0, 175, 240, 0.28);
+      --info-text: #7dd3fc;
+      --err-bg: rgba(248, 113, 113, 0.1);
+      --err-border: rgba(248, 113, 113, 0.35);
+      --err-text: #fca5a5;
+      --danger-soft: rgba(248, 113, 113, 0.12);
+      --danger-border: rgba(248, 113, 113, 0.35);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { color-scheme: light; }
+    html { color-scheme: dark; }
     body {
       font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--bg);
+      background-image: radial-gradient(ellipse 70% 45% at 50% -15%, rgba(0, 175, 240, 0.07), transparent);
       color: var(--text);
       min-height: 100vh;
       line-height: 1.5;
@@ -29,8 +43,8 @@
     }
     .site-header {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(10, 10, 12, 0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--stroke);
     }
     .site-header-inner {
@@ -51,7 +65,7 @@
     .badge-18 {
       font-size: 0.65rem; font-weight: 700;
       padding: 0.28rem 0.5rem; border-radius: 4px;
-      background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;
+      background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger-border);
     }
     .nav-link {
       color: var(--text); font-weight: 600; text-decoration: none; font-size: 0.8rem;
@@ -82,7 +96,7 @@
       position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block;
     }
     .skel {
-      background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+      background: linear-gradient(90deg, var(--surface) 0%, var(--surface-hover) 50%, var(--surface) 100%);
       background-size: 200% 100%; animation: sh 1.2s ease-in-out infinite;
     }
     @keyframes sh { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
@@ -92,7 +106,7 @@
     .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.65rem; }
     .chip {
       font-size: 0.7rem; font-weight: 600; padding: 0.28rem 0.55rem; border-radius: 6px;
-      background: #eff6ff; color: var(--primary); border: 1px solid #dbeafe;
+      background: var(--primary-soft); color: var(--primary); border: 1px solid var(--primary-border);
     }
     .pay-panel {
       border-radius: 10px;
@@ -168,6 +182,7 @@
       color: var(--muted);
       text-align: center;
     }
+    .pay-receive-note strong { color: var(--success); font-weight: 600; }
     .pay-method-icons {
       display: inline-flex; align-items: center; gap: 0.3rem;
       padding-left: 0.35rem; border-left: 1px solid rgba(255,255,255,0.35);
@@ -188,9 +203,9 @@
     }
     .alert {
       padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1rem;
-      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af;
+      background: var(--info-bg); border: 1px solid var(--info-border); color: var(--info-text);
     }
-    .alert.err { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .alert.err { background: var(--err-bg); border-color: var(--err-border); color: var(--err-text); }
     .alert[hidden] { display: none !important; }
     .state-box { text-align: center; padding: 3rem 1.5rem; color: var(--muted); }
     .more-section {
@@ -223,8 +238,8 @@
       transition: border-color 0.15s, box-shadow 0.15s;
     }
     .more-card:hover {
-      border-color: #c5cad3;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      border-color: var(--stroke-hover);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
     .more-thumb {
       position: relative; width: 100%; padding-top: 56.25%;
@@ -244,7 +259,7 @@
       position: absolute; top: 8px; right: 8px; z-index: 2;
       font-size: 0.7rem; font-weight: 700;
       padding: 0.2rem 0.45rem; border-radius: 5px;
-      background: rgba(255,255,255,0.95); border: 1px solid rgba(0,0,0,0.06);
+      background: rgba(20, 20, 24, 0.92); border: 1px solid var(--stroke-hover);
       color: var(--primary);
       display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; gap: 0.06rem;
     }
@@ -325,7 +340,7 @@
               </span>
             </span>
           </button>
-          <p class="pay-receive-note">You will receive access automatically after payment.</p>
+          <p class="pay-receive-note">Instant access after payment</p>
         </div>
         <div class="pay-section" id="crypto-section" hidden>
           <p class="pay-section-title">Crypto</p>
@@ -507,7 +522,7 @@
         return origin + '/api/paypal-checkout?' + p2.toString();
       }
       function tgUrlForVideo(v) {
-        var enc = encodeURIComponent('Hi! I want: ' + v.title + '\nPrice: $' + Number(v.price).toFixed(2) + '\nPlease send payment options.');
+        var enc = encodeURIComponent('Hello, I\'d like to purchase: ' + v.title + ' ($' + Number(v.price).toFixed(2) + ')');
         return tgUser ? 'https://t.me/' + tgUser + '?text=' + enc : 'https://t.me/share/url?url=&text=' + enc;
       }
       function startCheckout(price, maskedName, displayTitle, videoId, method) {
@@ -520,7 +535,7 @@
       }
       function tgUrlCryptoProof(v) {
         var lines = (cryptoWallets || []).map(function (w) { return '• ' + String(w.label || w.symbol || 'Wallet') + ': ' + String(w.address || ''); }).join('\n');
-        var enc = encodeURIComponent('Crypto $' + Number(v.price).toFixed(2) + ' — ' + v.title + '\n' + lines + '\nTX hash:');
+        var enc = encodeURIComponent('Payment proof — ' + v.title + ' ($' + Number(v.price).toFixed(2) + ')\n' + lines + '\nTX hash:');
         return tgUser ? 'https://t.me/' + tgUser + '?text=' + enc : 'https://t.me/share/url?url=&text=' + enc;
       }
       function setErr(t) { var el = document.getElementById('err-banner'); el.textContent = t || ''; el.hidden = !t; }
