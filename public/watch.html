@@ -8,34 +8,34 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #00aff0;
-      --primary-hover: #0095d4;
-      --bg: #0a0a0c;
-      --surface: #141418;
-      --surface-hover: #1c1c22;
-      --text: #f4f4f5;
-      --muted: #9ca3af;
+      --primary: #ff2d55;
+      --primary-hover: #e02548;
+      --bg: #0b0b0d;
+      --surface: #151518;
+      --surface-hover: #1e1e24;
+      --text: #f5f5f7;
+      --muted: #a1a1aa;
       --stroke: rgba(255, 255, 255, 0.08);
-      --stroke-hover: rgba(255, 255, 255, 0.14);
-      --danger: #f87171;
-      --success: #34d399;
-      --primary-soft: rgba(0, 175, 240, 0.12);
-      --primary-border: rgba(0, 175, 240, 0.28);
-      --info-bg: rgba(0, 175, 240, 0.1);
-      --info-border: rgba(0, 175, 240, 0.28);
-      --info-text: #7dd3fc;
-      --err-bg: rgba(248, 113, 113, 0.1);
-      --err-border: rgba(248, 113, 113, 0.35);
-      --err-text: #fca5a5;
-      --danger-soft: rgba(248, 113, 113, 0.12);
-      --danger-border: rgba(248, 113, 113, 0.35);
+      --stroke-hover: rgba(255, 255, 255, 0.15);
+      --danger: #ff6b81;
+      --success: #3dd68c;
+      --primary-soft: rgba(255, 45, 85, 0.14);
+      --primary-border: rgba(255, 45, 85, 0.35);
+      --info-bg: rgba(255, 45, 85, 0.1);
+      --info-border: rgba(255, 45, 85, 0.3);
+      --info-text: #ff8da1;
+      --err-bg: rgba(255, 107, 129, 0.1);
+      --err-border: rgba(255, 107, 129, 0.35);
+      --err-text: #ffb3be;
+      --danger-soft: rgba(255, 45, 85, 0.12);
+      --danger-border: rgba(255, 45, 85, 0.4);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { color-scheme: dark; }
     body {
       font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--bg);
-      background-image: radial-gradient(ellipse 70% 45% at 50% -15%, rgba(0, 175, 240, 0.07), transparent);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -18%, rgba(255, 45, 85, 0.12), transparent 60%);
       color: var(--text);
       min-height: 100vh;
       line-height: 1.5;
@@ -43,7 +43,7 @@
     }
     .site-header {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(10, 10, 12, 0.92);
+      background: rgba(11, 11, 13, 0.94);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--stroke);
     }
@@ -118,8 +118,8 @@
     .pay-panel h2 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.55rem; }
     .pay-price { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin-bottom: 0.85rem; display: flex; flex-direction: column; gap: 0.15rem; }
     .pay-price small { font-size: 0.8rem; opacity: 0.7; margin-left: 0.15rem; color: var(--muted); font-weight: 500; }
-    .pay-price .zar-eq { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
-    .zar-eq { font-size: 0.62rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+    .pay-price .zar-eq { font-size: 0.85rem; font-weight: 700; color: var(--success); }
+    .zar-eq { font-size: 0.7rem; font-weight: 700; color: var(--success); white-space: nowrap; }
     .zar-eq:empty { display: none; }
     .pay-section { margin-bottom: 0.9rem; }
     .pay-section-title {
@@ -263,7 +263,7 @@
       color: var(--primary);
       display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; gap: 0.06rem;
     }
-    .more-price .zar-eq { font-size: 0.58rem; color: #6b7280; font-weight: 600; }
+    .more-price .zar-eq { font-size: 0.68rem; color: var(--success); font-weight: 700; }
     .more-dur {
       position: absolute; bottom: 8px; right: 8px; z-index: 2;
       font-size: 0.62rem; font-weight: 600;
@@ -332,7 +332,7 @@
           <p class="pay-section-title">Pay with</p>
           <button type="button" class="btn btn-primary btn-pay-cta" id="btn-pay-instant">
             <span class="btn-pay-inner">
-              <span class="btn-pay-text">Pay and receive</span>
+              <span class="btn-pay-text">Unlock now</span>
               <span class="pay-method-icons" aria-hidden="true">
                 <svg class="pay-icon-apple" viewBox="0 0 50 32" aria-hidden="true"><rect width="50" height="32" rx="5" fill="#fff"/><path d="M13.2 9.8c-.5.6-1.2 1-2 1-.1-.8.3-1.5.7-2 .5-.6 1.3-1 2-.9.1.8-.2 1.5-.7 2.1zm.6 1.1c-1-.1-1.9.6-2.5.6s-1.3-.6-2.2-.6-1.6.6-2.1 1.4c-.9 1.1.6 3.3 1.7 3.4.5 0 .9-.3 1.5-.3s1 .3 1.5.3c.6.1 2.3-1.1 2.4-2.2-1.1-.4-1.9-1.4-1.3-2.6z" fill="#000" transform="translate(1,3)"/><text x="22" y="20" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="10" font-weight="600" fill="#000">Pay</text></svg>
                 <svg class="pay-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
@@ -340,7 +340,7 @@
               </span>
             </span>
           </button>
-          <p class="pay-receive-note">Instant access after payment</p>
+          <p class="pay-receive-note"><strong>Secure checkout</strong> · Instant access · Discreet billing</p>
         </div>
         <div class="pay-section" id="crypto-section" hidden>
           <p class="pay-section-title">Crypto</p>

@@ -90,7 +90,7 @@
       '@keyframes purchase-toast-pulse{0%,100%{opacity:1}50%{opacity:.45}}' +
       '.purchase-toast-body{flex:1;min-width:0;font-size:.78rem;line-height:1.45;color:#9ca3af}' +
       '.purchase-toast-who{display:block;font-weight:700;color:#f4f4f5;margin-bottom:.12rem}' +
-      '.purchase-toast-msg em{font-style:normal;color:#00aff0;font-weight:700}' +
+      '.purchase-toast-msg em{font-style:normal;color:#ff2d55;font-weight:700}' +
       '.purchase-toast-time{flex-shrink:0;font-size:.62rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em}' +
       '@media (max-width:480px){.purchase-toast{left:.65rem;right:.65rem;max-width:none}}';
     document.head.appendChild(style);

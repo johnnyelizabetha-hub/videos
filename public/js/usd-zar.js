@@ -1,10 +1,12 @@
 /**
  * Compact USD → ZAR display for the storefront.
- * Fetches rate once (cached 1h in memory / sessionStorage).
+ * Prefers same-origin /api/fx-rate (server proxy), then public APIs, then fallback.
  */
 (function (global) {
-  var CACHE_KEY = 'usd_zar_rate_v1';
+  var CACHE_KEY = 'usd_zar_rate_v2';
   var CACHE_MS = 60 * 60 * 1000;
+  /** Approximate USD→ZAR so labels never stay blank if APIs fail. */
+  var FALLBACK_RATE = 18.5;
   var rate = null;
   var loading = null;
 
@@ -26,6 +28,14 @@
     } catch (e) {}
   }
 
+  function applyRate(r) {
+    var n = Number(r);
+    if (!isFinite(n) || n <= 0) return null;
+    rate = n;
+    writeCache(n);
+    return n;
+  }
+
   function fetchRate() {
     if (rate != null && isFinite(rate)) return Promise.resolve(rate);
     var cached = readCache();
@@ -34,34 +44,50 @@
       return Promise.resolve(rate);
     }
     if (loading) return loading;
-    loading = fetch('https://api.frankfurter.app/latest?from=USD&to=ZAR')
-      .then(function (r) { return r.json(); })
+
+    function fromJson(d) {
+      var zar = d && (d.rate != null ? d.rate : d.rates && d.rates.ZAR);
+      return applyRate(zar);
+    }
+
+    loading = fetch('/api/fx-rate')
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (d) {
-        var zar = d && d.rates && d.rates.ZAR;
-        if (zar == null || !isFinite(Number(zar))) throw new Error('no rate');
-        rate = Number(zar);
-        writeCache(rate);
-        return rate;
+        var got = fromJson(d);
+        if (got == null) throw new Error('no rate');
+        return got;
+      })
+      .catch(function () {
+        return fetch('https://api.frankfurter.app/latest?from=USD&to=ZAR')
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            var got = fromJson(d);
+            if (got == null) throw new Error('no rate');
+            return got;
+          });
       })
       .catch(function () {
         return fetch('https://open.er-api.com/v6/latest/USD')
           .then(function (r) { return r.json(); })
           .then(function (d) {
-            var zar = d && d.rates && d.rates.ZAR;
-            if (zar == null || !isFinite(Number(zar))) throw new Error('no rate');
-            rate = Number(zar);
-            writeCache(rate);
-            return rate;
+            var got = fromJson(d);
+            if (got == null) throw new Error('no rate');
+            return got;
           });
       })
+      .catch(function () {
+        return applyRate(FALLBACK_RATE);
+      })
       .finally(function () { loading = null; });
+
     return loading;
   }
 
   function zarAmount(usd) {
     var n = Number(usd);
-    if (!isFinite(n) || n <= 0 || rate == null) return null;
-    return Math.round(n * rate);
+    if (!isFinite(n) || n <= 0) return null;
+    var r = rate != null && isFinite(rate) ? rate : FALLBACK_RATE;
+    return Math.round(n * r);
   }
 
   function zarLabel(usd) {
@@ -82,6 +108,12 @@
     var scope = root || document;
     var nodes = scope.querySelectorAll('[data-usd]');
     if (!nodes.length) return;
+    /* Paint fallback immediately so ZAR never looks "missing" */
+    nodes.forEach(function (el) {
+      var usd = Number(el.getAttribute('data-usd'));
+      var label = zarLabel(usd);
+      if (label) el.textContent = label;
+    });
     fetchRate().then(function () {
       nodes.forEach(function (el) {
         var usd = Number(el.getAttribute('data-usd'));
@@ -94,8 +126,11 @@
   function ensure(usd) {
     return fetchRate().then(function () {
       return zarLabel(usd);
-    }).catch(function () { return ''; });
+    }).catch(function () { return zarLabel(usd); });
   }
+
+  /* Warm cache as soon as script loads */
+  fetchRate().catch(function () {});
 
   global.UsdZar = {
     fetchRate: fetchRate,

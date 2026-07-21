@@ -8,27 +8,27 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #00aff0;
-      --primary-hover: #0095d4;
-      --bg: #0a0a0c;
-      --surface: #141418;
-      --surface-hover: #1c1c22;
-      --text: #f4f4f5;
-      --muted: #9ca3af;
+      --primary: #ff2d55;
+      --primary-hover: #e02548;
+      --bg: #0b0b0d;
+      --surface: #151518;
+      --surface-hover: #1e1e24;
+      --text: #f5f5f7;
+      --muted: #a1a1aa;
       --stroke: rgba(255, 255, 255, 0.08);
-      --stroke-hover: rgba(255, 255, 255, 0.14);
-      --danger: #f87171;
-      --success: #34d399;
-      --primary-soft: rgba(0, 175, 240, 0.12);
-      --primary-border: rgba(0, 175, 240, 0.28);
-      --info-bg: rgba(0, 175, 240, 0.1);
-      --info-border: rgba(0, 175, 240, 0.28);
-      --info-text: #7dd3fc;
-      --err-bg: rgba(248, 113, 113, 0.1);
-      --err-border: rgba(248, 113, 113, 0.35);
-      --err-text: #fca5a5;
-      --danger-soft: rgba(248, 113, 113, 0.12);
-      --danger-border: rgba(248, 113, 113, 0.35);
+      --stroke-hover: rgba(255, 255, 255, 0.15);
+      --danger: #ff6b81;
+      --success: #3dd68c;
+      --primary-soft: rgba(255, 45, 85, 0.14);
+      --primary-border: rgba(255, 45, 85, 0.35);
+      --info-bg: rgba(255, 45, 85, 0.1);
+      --info-border: rgba(255, 45, 85, 0.3);
+      --info-text: #ff8da1;
+      --err-bg: rgba(255, 107, 129, 0.1);
+      --err-border: rgba(255, 107, 129, 0.35);
+      --err-text: #ffb3be;
+      --danger-soft: rgba(255, 45, 85, 0.12);
+      --danger-border: rgba(255, 45, 85, 0.4);
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +36,7 @@
     body {
       font-family: 'DM Sans', system-ui, sans-serif;
       background: var(--bg);
-      background-image: radial-gradient(ellipse 70% 45% at 50% -15%, rgba(0, 175, 240, 0.07), transparent);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -18%, rgba(255, 45, 85, 0.12), transparent 60%);
       color: var(--text);
       min-height: 100vh;
       line-height: 1.5;
@@ -46,7 +46,7 @@
 
     .site-header {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(10, 10, 12, 0.92);
+      background: rgba(11, 11, 13, 0.94);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--stroke);
     }
@@ -95,7 +95,7 @@
       border-radius: 12px;
       padding: 1.15rem 1.25rem;
       margin: 1.25rem 0 1rem;
-      background: linear-gradient(135deg, rgba(0, 175, 240, 0.08) 0%, var(--surface) 55%);
+      background: linear-gradient(135deg, rgba(255, 45, 85, 0.14) 0%, var(--surface) 58%);
     }
     .promo-title {
       font-size: 1.15rem; font-weight: 700; margin-bottom: 0.2rem; letter-spacing: -0.02em;
@@ -141,7 +141,7 @@
       font-family: inherit; font-size: 0.875rem;
     }
     .search::placeholder { color: var(--muted); }
-    .search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 175, 240, 0.18); }
+    .search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 45, 85, 0.22); }
     .search-icon {
       position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%);
       color: var(--muted); pointer-events: none;
@@ -230,14 +230,14 @@
     }
     .badge-price em { font-style: normal; color: var(--primary); }
     .zar-eq {
-      font-size: 0.62rem;
-      font-weight: 600;
-      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--success);
       letter-spacing: 0.01em;
       white-space: nowrap;
     }
     .zar-eq:empty { display: none; }
-    .badge-price .zar-eq { color: var(--muted); }
+    .badge-price .zar-eq { color: var(--success); }
     .vcard-ph-free .badge-price { color: var(--primary); }
     .badge-dur {
       position: absolute; bottom: 10px; right: 10px; z-index: 3;
@@ -274,23 +274,42 @@
       border-color: var(--primary);
     }
     .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: #fff; }
+    .btn-buy {
+      width: 100%; flex: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.1rem; padding: 0.7rem 0.75rem !important;
+      font-size: 0.88rem !important; font-weight: 700 !important;
+      box-shadow: 0 4px 22px rgba(255, 45, 85, 0.35);
+    }
+    .btn-buy .btn-buy-main { line-height: 1.2; }
+    .btn-buy .btn-buy-zar {
+      font-size: 0.68rem; font-weight: 600; opacity: 0.95;
+      color: #ffe0e6;
+    }
+    .btn-preview-link {
+      display: block; text-align: center; margin-top: 0.35rem;
+      font-size: 0.72rem; font-weight: 600; color: var(--muted); text-decoration: none;
+    }
+    .btn-preview-link:hover { color: var(--primary); }
     .btn-telegram {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.4rem;
-      background: #229ED9 !important;
-      border-color: #229ED9 !important;
-      color: #fff !important;
-      font-weight: 700;
+      gap: 0.35rem;
+      background: transparent !important;
+      border-color: var(--stroke) !important;
+      color: var(--muted) !important;
+      font-weight: 600;
+      font-size: 0.72rem !important;
+      padding: 0.4rem 0.6rem !important;
     }
     .btn-telegram:hover {
-      background: #1b8fc4 !important;
-      border-color: #1b8fc4 !important;
-      color: #fff !important;
+      background: var(--surface-hover) !important;
+      border-color: var(--stroke-hover) !important;
+      color: var(--text) !important;
     }
-    .btn-telegram svg { flex-shrink: 0; width: 1em; height: 1em; }
-    .btn-telegram-block { width: 100%; flex: none; margin-top: 0.15rem; }
+    .btn-telegram svg { flex-shrink: 0; width: 0.9em; height: 0.9em; }
+    .btn-telegram-block { width: 100%; flex: none; margin-top: 0.35rem; }
     .nav-telegram {
       display: inline-flex;
       align-items: center;
@@ -326,7 +345,7 @@
       display: inline-flex; flex-direction: column; align-items: flex-end; line-height: 1.15; gap: 0.1rem;
     }
     .price-row-amt small { font-size: 0.7rem; font-weight: 500; opacity: 0.7; margin-left: 0.1rem; color: var(--muted); }
-    .price-row-amt .zar-eq { font-size: 0.68rem; }
+    .price-row-amt .zar-eq { font-size: 0.78rem; color: var(--success); }
     .pay-summary-price {
       font-size: 1.35rem; font-weight: 700; color: var(--primary);
       display: flex; flex-direction: column; align-items: center; gap: 0.12rem;
@@ -465,13 +484,10 @@
   <div class="container">
     <div class="promo-banner">
       <div class="promo-title">All Content — $150 <span class="zar-eq" data-usd="150"></span></div>
-      <div class="promo-sub">Full collection · Instant access after payment</div>
+      <div class="promo-sub">Full collection · Instant access after payment · Secure encrypted checkout</div>
       <div class="promo-actions">
-        <button type="button" class="promo-btn primary" id="promo-pay">Buy all — $150</button>
-        <a class="promo-btn telegram" id="promo-tg" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.788.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-          Telegram
-        </a>
+        <button type="button" class="promo-btn primary" id="promo-pay">Unlock all — $150 <span class="zar-eq" data-usd="150" style="color:#ffe0e6;margin-left:0.25rem"></span></button>
+        <a class="promo-btn" id="promo-tg" href="#" target="_blank" rel="noopener">Need help? Telegram</a>
       </div>
     </div>
 
@@ -701,7 +717,18 @@
         return (
           '<a class="btn btn-telegram' + (extraClass ? ' ' + extraClass : '') + '" href="' + escapeAttr(href || '#') +
           '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' +
-          TG_ICON + ' Telegram</a>'
+          TG_ICON + ' Questions? Telegram</a>'
+        );
+      }
+
+      function buyBtnHtml(price) {
+        var p = Number(price) || 0;
+        var zar = typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(p, 'btn-buy-zar') : '';
+        return (
+          '<button type="button" class="btn btn-primary btn-buy js-payopen">' +
+            '<span class="btn-buy-main">Unlock now · $' + p.toFixed(2) + '</span>' +
+            (zar ? '<span class="btn-buy-zar-wrap">' + zar + '</span>' : '') +
+          '</button>'
         );
       }
 
@@ -897,13 +924,15 @@
                 '<span class="vcard-meta-item">' + svgCal + metaDate + '</span>' +
               '</div>' +
               '<div class="btn-row">' +
-                '<a class="btn" href="' + escapeAttr(previewHref) + '" onclick="event.stopPropagation()">Preview</a>' +
                 (isFree && v.product_link
                   ? '<a class="btn btn-primary" href="' + escapeAttr(v.product_link) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open</a>'
                   : (!isFree
-                    ? '<button type="button" class="btn btn-primary js-payopen">Buy</button>'
+                    ? buyBtnHtml(price)
                     : '<button type="button" class="btn js-details">Details</button>')) +
               '</div>' +
+              (!isFree
+                ? '<a class="btn-preview-link" href="' + escapeAttr(previewHref) + '" onclick="event.stopPropagation()">Preview free clip</a>'
+                : '') +
               telegramBtnHtml(tgUrlForVideo(v, tgUser), 'btn-telegram-block') +
               (!isFree
                 ? '<div class="price-row">' +
@@ -999,13 +1028,19 @@
               '</span>' +
               '</div>'
             : '') +
-          '<div style="margin-top:0.5rem;display:flex;gap:0.5rem;flex-wrap:wrap">' +
-          '<a class="btn btn-primary" href="' + escapeAttr(watchPageUrl(v.id)) + '">Watch</a>' +
-          (!v.is_free ? '<button type="button" class="btn js-dpay">Buy</button>' : '') +
+          '<div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.45rem">' +
+          (!v.is_free
+            ? buyBtnHtml(v.price).replace('js-payopen', 'js-dpay')
+            : '') +
+          '<a class="btn" href="' + escapeAttr(watchPageUrl(v.id)) + '">Preview free clip</a>' +
           telegramBtnHtml(tgUrlForVideo(v, tgUser)) +
           '</div>';
+        if (typeof UsdZar !== 'undefined') UsdZar.refresh(d);
         var bp = d.querySelector('.js-dpay');
-        if (bp) bp.addEventListener('click', function () { d.close(); openPay(v); });
+        if (bp) bp.addEventListener('click', function () {
+          d.close();
+          startCheckout(v.price, null, v.title, v.id, 'payjsr');
+        });
         d.showModal();
         syncModalBodyClass();
       }
@@ -1079,6 +1114,7 @@
 
       async function boot() {
         parseUrlParams();
+        if (typeof UsdZar !== 'undefined') UsdZar.refresh(document);
         EBOOKS_ORIGIN = normalizeOrigin(EBOOKS_ORIGIN || '');
         var hints = [];
         if (!EBOOKS_ORIGIN) hints.push('Set EBOOKS_SITE_URL or VITE_CHECKOUT_URL for checkout redirects.');
