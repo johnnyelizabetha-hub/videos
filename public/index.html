@@ -194,24 +194,35 @@
     }
     @keyframes sh { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
     .preview-hit {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.45rem;
       z-index: 4; text-decoration: none; color: inherit;
-      background: transparent;
+      background: rgba(0, 0, 0, 0.28);
       transition: background 0.2s;
     }
     .preview-hit[hidden] { display: none !important; }
-    .vcard:hover .preview-hit { background: rgba(0,0,0,0.28); }
+    .vcard:hover .preview-hit { background: rgba(0, 0, 0, 0.42); }
     .play-circ {
-      width: 48px; height: 48px; border-radius: 50%;
+      width: 52px; height: 52px; border-radius: 50%;
       background: var(--primary);
       display: flex; align-items: center; justify-content: center;
-      opacity: 0; transform: scale(0.9);
-      transition: opacity 0.2s, transform 0.2s;
+      opacity: 1; transform: scale(1);
+      box-shadow: 0 4px 18px rgba(255, 45, 85, 0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .vcard:hover .play-circ { opacity: 1; transform: scale(1); }
+    .vcard:hover .play-circ {
+      transform: scale(1.06);
+      box-shadow: 0 6px 22px rgba(255, 45, 85, 0.55);
+    }
     .play-tri {
       width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent;
       border-left: 14px solid #fff; margin-left: 3px;
+    }
+    .tap-play {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+      text-transform: uppercase; color: #fff;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
+      pointer-events: none;
     }
     .grad-over {
       position: absolute; inset: 0; pointer-events: none;
@@ -1054,7 +1065,7 @@
                 '<div class="skel js-skel"></div>' +
                 '<img class="js-thumb" alt="" style="display:none" />' +
                 '<div class="grad-over"></div>' +
-                '<a class="preview-hit" href="' + escapeAttr(previewHref) + '"><div class="play-circ"><div class="play-tri"></div></div></a>' +
+                '<a class="preview-hit" href="' + escapeAttr(previewHref) + '"><div class="play-circ"><div class="play-tri"></div></div><span class="tap-play">Tap to play</span></a>' +
                 badgeTop +
                 (dur ? '<span class="badge-dur">' + escapeHtml(dur) + '</span>' : '') +
               '</div>' +
