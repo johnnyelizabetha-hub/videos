@@ -137,6 +137,46 @@
       background: var(--primary); color: #fff; border-color: var(--primary);
     }
     .btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: #fff; }
+    dialog.dlg-modal:not([open]) { display: none !important; }
+    dialog.dlg-modal[open] {
+      border: none; border-radius: 12px;
+      max-width: min(400px, calc(100vw - 2rem));
+      width: min(400px, calc(100vw - 2rem));
+      max-height: min(90vh, 720px);
+      height: fit-content; margin: auto; padding: 0;
+      position: fixed; inset: 0; z-index: 2147483647;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--stroke);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    dialog.dlg-modal::backdrop { background: rgba(0, 0, 0, 0.68); }
+    .dlg-h {
+      flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 1.15rem; border-bottom: 1px solid var(--stroke);
+    }
+    .dlg-h strong { font-size: 0.95rem; font-weight: 700; }
+    .dlg-b { padding: 1.1rem 1.15rem 1.2rem; font-size: 0.875rem; color: var(--muted); overflow-y: auto; }
+    .dlg-x {
+      width: 2rem; height: 2rem; border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--stroke);
+      color: var(--muted); font-size: 1.15rem; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fx-modal-box {
+      padding: 0.85rem 0.95rem; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--stroke);
+    }
+    .fx-modal-row {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+    .fx-modal-row-main { margin-bottom: 0.45rem; padding-top: 0.45rem; border-top: 1px solid var(--stroke); }
+    .fx-modal-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .fx-modal-usd { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+    .fx-modal-zar { font-size: 1.45rem; font-weight: 700; color: var(--success); letter-spacing: -0.02em; }
+    .fx-modal-note { font-size: 0.72rem; color: var(--muted); line-height: 1.45; margin: 0; }
     .btn-telegram {
       display: inline-flex;
       align-items: center;
@@ -332,12 +372,7 @@
           <p class="pay-section-title">Pay with</p>
           <button type="button" class="btn btn-primary btn-pay-cta" id="btn-pay-instant">
             <span class="btn-pay-inner">
-              <span class="btn-pay-text">Unlock now</span>
-              <span class="pay-method-icons" aria-hidden="true">
-                <svg class="pay-icon-apple" viewBox="0 0 50 32" aria-hidden="true"><rect width="50" height="32" rx="5" fill="#fff"/><path d="M13.2 9.8c-.5.6-1.2 1-2 1-.1-.8.3-1.5.7-2 .5-.6 1.3-1 2-.9.1.8-.2 1.5-.7 2.1zm.6 1.1c-1-.1-1.9.6-2.5.6s-1.3-.6-2.2-.6-1.6.6-2.1 1.4c-.9 1.1.6 3.3 1.7 3.4.5 0 .9-.3 1.5-.3s1 .3 1.5.3c.6.1 2.3-1.1 2.4-2.2-1.1-.4-1.9-1.4-1.3-2.6z" fill="#000" transform="translate(1,3)"/><text x="22" y="20" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="10" font-weight="600" fill="#000">Pay</text></svg>
-                <svg class="pay-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                <svg class="pay-icon-cashapp" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#00D632"/><text x="12" y="16.5" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#fff">$</text></svg>
-              </span>
+              <span class="btn-pay-text">Get Now</span>
             </span>
           </button>
           <p class="pay-receive-note"><strong>Secure checkout</strong> · Instant access · Discreet billing</p>
@@ -359,6 +394,26 @@
       </aside>
     </div>
 
+    <dialog id="dlg-fx" class="dlg-modal" aria-labelledby="dlg-fx-heading">
+      <div class="dlg-h"><strong id="dlg-fx-heading">Confirm payment</strong><button type="button" class="dlg-x" id="dlg-fx-close" aria-label="Close">×</button></div>
+      <div class="dlg-b">
+        <div class="pay-summary-title" id="dlg-fx-title" style="text-align:center;margin-bottom:0.75rem;font-weight:600"></div>
+        <div class="fx-modal-box">
+          <div class="fx-modal-row">
+            <span class="fx-modal-label">List price</span>
+            <span class="fx-modal-usd" id="dlg-fx-usd">—</span>
+          </div>
+          <div class="fx-modal-row fx-modal-row-main">
+            <span class="fx-modal-label">You pay (ZAR)</span>
+            <span class="fx-modal-zar" id="dlg-fx-zar">Loading…</span>
+          </div>
+          <p class="fx-modal-note">Card is charged in South African Rand.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="dlg-fx-go" style="width:100%;margin-top:0.85rem;padding:0.75rem;font-weight:700">Get Now</button>
+        <p class="pay-receive-note" style="margin-top:0.75rem">Secure checkout · Instant access</p>
+      </div>
+    </dialog>
+
     <section class="more-section" id="more-section" hidden>
       <div class="more-head">
         <h2>More videos</h2>
@@ -377,7 +432,13 @@
   <script>
     (function () {
       var EBOOKS_ORIGIN = '{{EBOOKS_SITE_URL}}';
+      var LOCAL_CHECKOUT = '{{LOCAL_CHECKOUT}}' === '1';
       var TG_ENV = '{{TELEGRAM_USERNAME}}'.replace(/^@/, '').trim();
+
+      function checkoutOrigin() {
+        if (LOCAL_CHECKOUT) return window.location.origin;
+        return normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
+      }
       var MASKED_PRODUCT_NAME = 'Digital Ebook';
       function pickMaskedName(custom) {
         if (custom && String(custom).trim()) return String(custom).trim();
@@ -486,9 +547,8 @@
           renderMoreVideos(pack.videos || [], excludeId);
         } catch (e) {}
       }
-      function ebooksSuccessUrl(price, maskedName, displayTitle, videoId) {
-        var origin = normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
-        if (!origin) return null;
+      function successReturnUrl(price, maskedName, displayTitle, videoId) {
+        var origin = checkoutOrigin() || window.location.origin;
         var masked = pickMaskedName(maskedName);
         var params = new URLSearchParams();
         params.set('status', 'success');
@@ -501,11 +561,10 @@
         return origin + '/?' + params.toString();
       }
       function checkoutUrl(price, maskedName, displayTitle, videoId, method) {
-        var origin = normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
+        var origin = checkoutOrigin();
         if (!origin) return null;
         var masked = pickMaskedName(maskedName);
-        var successUrl = ebooksSuccessUrl(price, masked, displayTitle || 'Digital purchase', videoId);
-        if (!successUrl) return null;
+        var successUrl = successReturnUrl(price, masked, displayTitle || 'Digital purchase', videoId);
         var p2 = new URLSearchParams();
         p2.set('amount', String(price));
         p2.set('currency', 'USD');
@@ -518,21 +577,76 @@
         if (tgCheckout) p2.set('telegram_username', tgCheckout);
         var cancelP = new URLSearchParams(p2.toString());
         cancelP.set('payment_canceled', 'true');
-        p2.set('cancel_url', origin + '/api/paypal-checkout?' + cancelP.toString());
-        return origin + '/api/paypal-checkout?' + p2.toString();
+        p2.set('cancel_url', origin + '/api/payjsr-checkout?' + cancelP.toString());
+        return origin + '/api/payjsr-checkout?' + p2.toString();
       }
       function tgUrlForVideo(v) {
         var enc = encodeURIComponent('Hello, I\'d like to purchase: ' + v.title + ' ($' + Number(v.price).toFixed(2) + ')');
         return tgUser ? 'https://t.me/' + tgUser + '?text=' + enc : 'https://t.me/share/url?url=&text=' + enc;
       }
-      function startCheckout(price, maskedName, displayTitle, videoId, method) {
-        var url = checkoutUrl(price, maskedName, displayTitle, videoId, method || 'payjsr');
-        if (!url) {
-          alert('Checkout is not configured. Set EBOOKS_SITE_URL or VITE_CHECKOUT_URL.');
-          return;
-        }
-        window.location.href = url;
+      var pendingCheckout = null;
+      function startCheckout(price, maskedName, displayTitle, videoId) {
+        openFxModal({
+          price: Number(price) || 0,
+          maskedName: maskedName,
+          displayTitle: displayTitle || 'Digital purchase',
+          videoId: videoId || '',
+        });
       }
+      function openFxModal(opts) {
+        pendingCheckout = opts || {};
+        var price = Number(opts.price) || 0;
+        var title = opts.displayTitle || 'Digital purchase';
+        document.getElementById('dlg-fx-title').textContent = title;
+        document.getElementById('dlg-fx-usd').textContent = '$' + price.toFixed(2) + ' USD';
+        var zarEl = document.getElementById('dlg-fx-zar');
+        zarEl.textContent = 'Loading…';
+        if (typeof UsdZar !== 'undefined') {
+          UsdZar.ensure(price).then(function (label) {
+            zarEl.textContent = label ? label.replace(/^≈\s*/, '') : ('R' + Math.round(price * 18.5));
+          }).catch(function () {
+            zarEl.textContent = 'R' + Math.round(price * 18.5);
+          });
+        }
+        var go = document.getElementById('dlg-fx-go');
+        go.disabled = false;
+        go.textContent = 'Get Now';
+        go.onclick = function () {
+          if (pendingCheckout.checkoutUrl) {
+            go.disabled = true;
+            go.textContent = 'Redirecting…';
+            window.location.href = pendingCheckout.checkoutUrl;
+            return;
+          }
+          var url = checkoutUrl(opts.price, opts.maskedName, title, opts.videoId, 'payjsr');
+          if (!url) { alert('Checkout is not configured.'); return; }
+          go.disabled = true;
+          go.textContent = 'Redirecting…';
+          window.location.href = url;
+        };
+        var base = checkoutUrl(price, opts.maskedName, title, opts.videoId, 'payjsr');
+        if (base) {
+          try {
+            var u = new URL(base, window.location.origin);
+            u.searchParams.set('format', 'json');
+            fetch(u.toString(), { headers: { Accept: 'application/json' } })
+              .then(function (r) { return r.json(); })
+              .then(function (data) {
+                if (!data || !data.ok) return;
+                pendingCheckout.checkoutUrl = data.checkout_url;
+                if (data.amount_zar != null) {
+                  zarEl.textContent = 'R' + Number(data.amount_zar).toLocaleString('en-US', {
+                    minimumFractionDigits: 2, maximumFractionDigits: 2
+                  });
+                }
+              }).catch(function () {});
+          } catch (e) {}
+        }
+        document.getElementById('dlg-fx').showModal();
+      }
+      document.getElementById('dlg-fx-close').addEventListener('click', function () {
+        document.getElementById('dlg-fx').close();
+      });
       function tgUrlCryptoProof(v) {
         var lines = (cryptoWallets || []).map(function (w) { return '• ' + String(w.label || w.symbol || 'Wallet') + ': ' + String(w.address || ''); }).join('\n');
         var enc = encodeURIComponent('Payment proof — ' + v.title + ' ($' + Number(v.price).toFixed(2) + ')\n' + lines + '\nTX hash:');
@@ -612,7 +726,7 @@
       async function boot() {
         parseUrlParams();
         EBOOKS_ORIGIN = normalizeOrigin(EBOOKS_ORIGIN || '');
-        if (!EBOOKS_ORIGIN) setErr('Set EBOOKS_SITE_URL or VITE_CHECKOUT_URL for checkout.');
+        if (!LOCAL_CHECKOUT && !checkoutOrigin()) setErr('Set PAYJSR_PAYMENT_LINKS on this host, or EBOOKS_SITE_URL.');
         try {
           var br = await fetch('/api/site-brief').then(function (r) { return r.json(); });
           if (br.telegram_username) tgUser = br.telegram_username.replace(/^@/, '');

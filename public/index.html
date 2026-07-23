@@ -439,6 +439,19 @@
       color: var(--muted); text-align: center;
     }
     .pay-trust-note strong { color: var(--success); font-weight: 600; }
+    .fx-modal-box {
+      margin-top: 0.35rem; padding: 0.85rem 0.95rem;
+      border-radius: 10px; background: var(--surface); border: 1px solid var(--stroke);
+    }
+    .fx-modal-row {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+    .fx-modal-row-main { margin-bottom: 0.45rem; padding-top: 0.45rem; border-top: 1px solid var(--stroke); }
+    .fx-modal-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .fx-modal-usd { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+    .fx-modal-zar { font-size: 1.45rem; font-weight: 700; color: var(--success); letter-spacing: -0.02em; }
+    .fx-modal-note { font-size: 0.72rem; color: var(--muted); line-height: 1.45; margin: 0; }
     .btn-ghost {
       background: var(--bg) !important; border-color: var(--stroke) !important; color: var(--text) !important;
     }
@@ -455,6 +468,32 @@
     }
     .trust-footer-row span { display: inline-flex; align-items: center; gap: 0.3rem; }
 
+    #success-page {
+      display: none; position: fixed; inset: 0; z-index: 2147483646;
+      align-items: center; justify-content: center; padding: 1.5rem;
+      background: rgba(11, 11, 13, 0.92); backdrop-filter: blur(10px);
+    }
+    #success-page.active { display: flex; }
+    .success-card {
+      background: var(--surface); border: 1px solid var(--stroke); border-radius: 14px;
+      padding: 2rem 1.5rem; text-align: center; max-width: 420px; width: 100%;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .success-card h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.55rem; }
+    .success-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.15rem; line-height: 1.55; }
+    .success-spinner {
+      width: 36px; height: 36px; margin: 0 auto 1rem;
+      border: 3px solid var(--primary-border); border-top-color: var(--primary);
+      border-radius: 50%; animation: success-spin 0.85s linear infinite;
+    }
+    @keyframes success-spin { to { transform: rotate(360deg); } }
+    .btn-success-tg {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+      width: 100%; padding: 0.85rem 1rem; border-radius: 10px;
+      background: var(--primary); color: #fff; font-weight: 700; text-decoration: none;
+      box-shadow: 0 4px 22px rgba(255, 45, 85, 0.35);
+    }
+
     @media (max-width: 640px) {
       .container { padding: 0 1rem 2rem; }
       .promo-banner { padding: 1rem; margin: 1rem 0 1.15rem; }
@@ -465,6 +504,15 @@
   </style>
 </head>
 <body>
+  <div id="success-page">
+    <div class="success-card">
+      <div class="success-spinner" aria-hidden="true"></div>
+      <h2>Payment confirmed!</h2>
+      <p>Unlocking your access now — you’ll be redirected to Telegram in a moment.</p>
+      <a id="success-tg-btn" class="btn-success-tg" href="#" target="_blank" rel="noopener">Open my content</a>
+    </div>
+  </div>
+
   <header class="site-header">
     <div class="site-header-inner">
       <a class="brand" href="/">
@@ -486,7 +534,7 @@
       <div class="promo-title">All Content — $150 <span class="zar-eq" data-usd="150"></span></div>
       <div class="promo-sub">Full collection · Instant access after payment · Secure encrypted checkout</div>
       <div class="promo-actions">
-        <button type="button" class="promo-btn primary" id="promo-pay">Unlock all — $150 <span class="zar-eq" data-usd="150" style="color:#ffe0e6;margin-left:0.25rem"></span></button>
+        <button type="button" class="promo-btn primary" id="promo-pay">Get Now — $150 <span class="zar-eq" data-usd="150" style="color:#ffe0e6;margin-left:0.25rem"></span></button>
         <a class="promo-btn" id="promo-tg" href="#" target="_blank" rel="noopener">Need help? Telegram</a>
       </div>
     </div>
@@ -528,30 +576,24 @@
   </dialog>
 
   <dialog id="dlg-pay" class="dlg-modal" aria-labelledby="dlg-pay-heading">
-    <div class="dlg-h"><strong id="dlg-pay-heading">Checkout</strong><button type="button" class="dlg-x" data-close="p" aria-label="Close">×</button></div>
+    <div class="dlg-h"><strong id="dlg-pay-heading">Confirm payment</strong><button type="button" class="dlg-x" data-close="p" aria-label="Close">×</button></div>
     <div class="dlg-b">
       <div class="pay-summary" id="dlg-pay-summary" aria-live="polite"></div>
-
-      <div class="pay-section">
-        <div class="pay-section-title">Pay with</div>
-        <button type="button" class="btn btn-primary btn-block btn-pay-cta" id="dlg-pay-instant">
-          <span class="btn-pay-inner">
-            <span class="btn-pay-text">Pay now</span>
-            <span class="pay-method-icons" aria-hidden="true">
-              <svg class="pay-icon-apple" viewBox="0 0 50 32" aria-hidden="true"><rect width="50" height="32" rx="5" fill="#fff"/><path d="M13.2 9.8c-.5.6-1.2 1-2 1-.1-.8.3-1.5.7-2 .5-.6 1.3-1 2-.9.1.8-.2 1.5-.7 2.1zm.6 1.1c-1-.1-1.9.6-2.5.6s-1.3-.6-2.2-.6-1.6.6-2.1 1.4c-.9 1.1.6 3.3 1.7 3.4.5 0 .9-.3 1.5-.3s1 .3 1.5.3c.6.1 2.3-1.1 2.4-2.2-1.1-.4-1.9-1.4-1.3-2.6z" fill="#000" transform="translate(1,3)"/><text x="22" y="20" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-size="10" font-weight="600" fill="#000">Pay</text></svg>
-              <svg class="pay-icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-              <svg class="pay-icon-cashapp" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#00D632"/><text x="12" y="16.5" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#fff">$</text></svg>
-            </span>
-          </span>
-        </button>
+      <div class="fx-modal-box" id="dlg-fx-box">
+        <div class="fx-modal-row">
+          <span class="fx-modal-label">List price</span>
+          <span class="fx-modal-usd" id="dlg-fx-usd">—</span>
+        </div>
+        <div class="fx-modal-row fx-modal-row-main">
+          <span class="fx-modal-label">You pay (ZAR)</span>
+          <span class="fx-modal-zar" id="dlg-fx-zar">Loading…</span>
+        </div>
+        <p class="fx-modal-note">Card is charged in South African Rand. Rate updates live.</p>
       </div>
-
-      <div class="pay-section" id="dlg-pay-crypto-section" hidden>
-        <div class="pay-section-title">Crypto</div>
-        <div id="dlg-pay-crypto-list"></div>
-        <a class="btn btn-block btn-ghost" style="margin-top:0.55rem;padding:0.65rem 1rem;text-decoration:none" id="dlg-pay-crypto-tg" href="#" target="_blank" rel="noopener">Submit payment proof</a>
-      </div>
-      <p class="pay-trust-note">Instant access after payment</p>
+      <button type="button" class="btn btn-primary btn-block btn-pay-cta btn-buy" id="dlg-pay-instant" style="margin-top:0.85rem">
+        <span class="btn-buy-main">Get Now</span>
+      </button>
+      <p class="pay-trust-note">Secure checkout · Instant access after payment</p>
     </div>
   </dialog>
 
@@ -569,8 +611,14 @@
   <script>
     (function () {
       var EBOOKS_ORIGIN = '{{EBOOKS_SITE_URL}}';
+      var LOCAL_CHECKOUT = '{{LOCAL_CHECKOUT}}' === '1';
       var TG_ENV = '{{TELEGRAM_USERNAME}}'.replace(/^@/, '').trim();
       var MASKED_PRODUCT_NAME = 'Digital Ebook';
+
+      function checkoutOrigin() {
+        if (LOCAL_CHECKOUT) return window.location.origin;
+        return normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
+      }
       function pickMaskedName(custom) {
         if (custom && String(custom).trim()) return String(custom).trim();
         return MASKED_PRODUCT_NAME;
@@ -668,9 +716,8 @@
         return j.success && j.url ? j.url : null;
       }
 
-      function ebooksSuccessUrl(price, maskedName, displayTitle, videoId) {
-        var origin = normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
-        if (!origin) return null;
+      function successReturnUrl(price, maskedName, displayTitle, videoId, extra) {
+        var origin = checkoutOrigin() || window.location.origin;
         var masked = pickMaskedName(maskedName);
         var params = new URLSearchParams();
         params.set('status', 'success');
@@ -680,16 +727,16 @@
         if (videoId) params.set('video_id', String(videoId));
         var tg = (tgUser || TG_ENV || '').replace(/^@/, '').trim();
         if (tg) params.set('telegram_username', tg);
+        if (extra && extra.offer_type) params.set('offer_type', extra.offer_type);
         return origin + '/?' + params.toString();
       }
 
       function checkoutUrl(price, maskedName, displayTitle, videoId, method) {
-        var origin = normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
+        var origin = checkoutOrigin();
         if (!origin) return null;
         var vid = videoId || '';
         var masked = pickMaskedName(maskedName);
-        var successUrl = ebooksSuccessUrl(price, masked, displayTitle || 'Digital purchase', vid);
-        if (!successUrl) return null;
+        var successUrl = successReturnUrl(price, masked, displayTitle || 'Digital purchase', vid);
         var p2 = new URLSearchParams();
         p2.set('amount', String(price));
         p2.set('currency', 'USD');
@@ -702,8 +749,8 @@
         if (tgCheckout) p2.set('telegram_username', tgCheckout);
         var cancelP = new URLSearchParams(p2.toString());
         cancelP.set('payment_canceled', 'true');
-        p2.set('cancel_url', origin + '/api/paypal-checkout?' + cancelP.toString());
-        return origin + '/api/paypal-checkout?' + p2.toString();
+        p2.set('cancel_url', origin + '/api/payjsr-checkout?' + cancelP.toString());
+        return origin + '/api/payjsr-checkout?' + p2.toString();
       }
 
       function watchPageUrl(videoId) {
@@ -726,7 +773,7 @@
         var zar = typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(p, 'btn-buy-zar') : '';
         return (
           '<button type="button" class="btn btn-primary btn-buy js-payopen">' +
-            '<span class="btn-buy-main">Unlock now · $' + p.toFixed(2) + '</span>' +
+            '<span class="btn-buy-main">Get Now · $' + p.toFixed(2) + '</span>' +
             (zar ? '<span class="btn-buy-zar-wrap">' + zar + '</span>' : '') +
           '</button>'
         );
@@ -747,46 +794,114 @@
         return 'https://t.me/share/url?url=&text=' + enc;
       }
 
-      function startCheckout(price, maskedName, displayTitle, videoId, method) {
-        var url = checkoutUrl(price, maskedName, displayTitle, videoId, method || 'payjsr');
-        if (!url) {
-          alert('Checkout is not configured. Set EBOOKS_SITE_URL or VITE_CHECKOUT_URL.');
-          return;
-        }
-        window.location.href = url;
+      function startCheckout(price, maskedName, displayTitle, videoId) {
+        openFxModal({
+          price: Number(price) || 0,
+          maskedName: maskedName,
+          displayTitle: displayTitle || 'Digital purchase',
+          videoId: videoId || '',
+        });
       }
 
       function startPromoCheckout() {
-        var masked = pickMaskedName();
-        var origin = normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
-        if (!origin) {
-          alert('Checkout is not configured. Set EBOOKS_SITE_URL or VITE_CHECKOUT_URL.');
+        openFxModal({
+          price: 150,
+          maskedName: pickMaskedName(),
+          displayTitle: 'VIP Access - Full Collection',
+          videoId: '',
+          offerType: 'all_content',
+        });
+      }
+
+      var pendingCheckout = null;
+
+      function openFxModal(opts) {
+        pendingCheckout = opts || null;
+        var price = Number(opts && opts.price) || 0;
+        var title = (opts && opts.displayTitle) || 'Digital purchase';
+        document.body.classList.add('modal-dlg-open');
+        document.getElementById('dlg-pay-heading').textContent = 'Confirm payment';
+        var sum = document.getElementById('dlg-pay-summary');
+        sum.innerHTML =
+          '<div class="pay-summary-title">' + escapeHtml(title) + '</div>';
+        document.getElementById('dlg-fx-usd').textContent = '$' + price.toFixed(2) + ' USD';
+        var zarEl = document.getElementById('dlg-fx-zar');
+        zarEl.textContent = 'Loading…';
+        if (typeof UsdZar !== 'undefined') {
+          UsdZar.ensure(price).then(function (label) {
+            if (label) zarEl.textContent = label.replace(/^≈\s*/, '');
+            else zarEl.textContent = '≈ R' + Math.round(price * 18.5).toLocaleString('en-US');
+          }).catch(function () {
+            zarEl.textContent = '≈ R' + Math.round(price * 18.5).toLocaleString('en-US');
+          });
+        } else {
+          zarEl.textContent = '≈ R' + Math.round(price * 18.5).toLocaleString('en-US');
+        }
+
+        var payBtn = document.getElementById('dlg-pay-instant');
+        payBtn.disabled = false;
+        payBtn.querySelector('.btn-buy-main').textContent = 'Get Now';
+        payBtn.onclick = function () { confirmFxCheckout(); };
+
+        /* Prefetch PayJSR link + exact ZAR */
+        var baseCheckout = checkoutUrl(price, opts.maskedName, title, opts.videoId, 'payjsr');
+        pendingCheckout.fetchUrl = '';
+        pendingCheckout.checkoutUrl = '';
+        if (baseCheckout) {
+          try {
+            var u = new URL(baseCheckout, window.location.origin);
+            if (opts.offerType) u.searchParams.set('offer_type', opts.offerType);
+            u.searchParams.set('format', 'json');
+            pendingCheckout.fetchUrl = u.toString();
+          } catch (e) {
+            pendingCheckout.fetchUrl = baseCheckout + (baseCheckout.indexOf('?') >= 0 ? '&' : '?') + 'format=json';
+          }
+        }
+        if (pendingCheckout.fetchUrl) {
+          fetch(pendingCheckout.fetchUrl, { headers: { Accept: 'application/json' } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (!pendingCheckout || !data || !data.ok) return;
+              pendingCheckout.checkoutUrl = data.checkout_url;
+              if (data.amount_zar != null) {
+                zarEl.textContent = 'R' + Number(data.amount_zar).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+              }
+            })
+            .catch(function () {});
+        }
+
+        document.getElementById('dlg-pay').showModal();
+        syncModalBodyClass();
+      }
+
+      function confirmFxCheckout() {
+        var opts = pendingCheckout;
+        if (!opts) return;
+        var payBtn = document.getElementById('dlg-pay-instant');
+        if (opts.checkoutUrl) {
+          payBtn.disabled = true;
+          payBtn.querySelector('.btn-buy-main').textContent = 'Redirecting…';
+          window.location.href = opts.checkoutUrl;
           return;
         }
-        var amount = 150;
-        var displayTitle = 'VIP Access - Full Collection';
-        var successParams = new URLSearchParams();
-        successParams.set('status', 'success');
-        successParams.set('product_name', masked);
-        successParams.set('display_title', displayTitle);
-        successParams.set('amount', amount.toFixed(2));
-        successParams.set('offer_type', 'all_content');
-        var tg = (tgUser || TG_ENV || '').replace(/^@/, '').trim();
-        if (tg) successParams.set('telegram_username', tg);
-        var successUrl = origin + '/?' + successParams.toString();
-        var p = new URLSearchParams();
-        p.set('amount', amount.toFixed(2));
-        p.set('currency', 'USD');
-        p.set('success_url', successUrl);
-        p.set('product_name', masked);
-        p.set('display_title', displayTitle);
-        p.set('offer_type', 'all_content');
-        p.set('method', 'payjsr');
-        if (tg) p.set('telegram_username', tg);
-        var cancelP = new URLSearchParams(p.toString());
-        cancelP.set('payment_canceled', 'true');
-        p.set('cancel_url', origin + '/api/paypal-checkout?' + cancelP.toString());
-        window.location.href = origin + '/api/paypal-checkout?' + p.toString();
+        var url = checkoutUrl(opts.price, opts.maskedName, opts.displayTitle, opts.videoId, 'payjsr');
+        if (!url) {
+          alert('Checkout is not configured. Set PAYJSR_PAYMENT_LINKS.');
+          return;
+        }
+        if (opts.offerType) {
+          try {
+            var u = new URL(url, window.location.origin);
+            u.searchParams.set('offer_type', opts.offerType);
+            url = u.pathname + '?' + u.searchParams.toString();
+          } catch (e) {}
+        }
+        payBtn.disabled = true;
+        payBtn.querySelector('.btn-buy-main').textContent = 'Redirecting…';
+        window.location.href = url;
       }
 
       function setErr(t) {
@@ -801,6 +916,33 @@
 
       function parseUrlParams() {
         var p = new URLSearchParams(window.location.search);
+        if (p.get('status') === 'success') {
+          var title = p.get('display_title') || p.get('product_name') || 'Digital purchase';
+          var amount = p.get('amount') || '';
+          var videoId = p.get('video_id') || '';
+          var tg = (p.get('telegram_username') || TG_ENV || '').replace(/^@/, '').trim();
+          var lines = [
+            '✅ Access ready',
+            '',
+            '🎬 ' + title,
+            amount ? '💰 $' + amount + ' USD' : '',
+            videoId ? '🆔 Ref: ' + videoId : '',
+            '',
+            'Tap Send to open my private library.'
+          ].filter(Boolean).join('\n');
+          var sp = document.getElementById('success-page');
+          var btn = document.getElementById('success-tg-btn');
+          if (tg) {
+            var tgUrl = 'https://t.me/' + tg + '?text=' + encodeURIComponent(lines);
+            if (btn) btn.href = tgUrl;
+            if (sp) sp.classList.add('active');
+            setTimeout(function () { window.location.replace(tgUrl); }, 1200);
+          } else if (sp) {
+            sp.classList.add('active');
+            if (btn) { btn.textContent = 'Payment received'; btn.removeAttribute('href'); }
+          }
+          return;
+        }
         if (p.get('payment_canceled') === 'true') {
           var b = document.getElementById('pay-cancel');
           b.hidden = false;
@@ -1046,58 +1188,7 @@
       }
 
       function openPay(v) {
-        payTarget = v;
-        document.body.classList.add('modal-dlg-open');
-        var sum = document.getElementById('dlg-pay-summary');
-        sum.innerHTML =
-          '<div class="pay-summary-title">' + escapeHtml(v.title) + '</div>' +
-          '<div class="pay-summary-price">$' + Number(v.price).toFixed(2) + '<small>USD</small>' +
-          (typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(v.price) : '') +
-          '</div>';
-        if (typeof UsdZar !== 'undefined') UsdZar.refresh(sum);
-
-        var sec = document.getElementById('dlg-pay-crypto-section');
-        var list = document.getElementById('dlg-pay-crypto-list');
-        var tgL = document.getElementById('dlg-pay-crypto-tg');
-
-        if (payCryptoWallets.length) {
-          sec.hidden = false;
-          list.innerHTML = payCryptoWallets
-            .map(function (w) {
-              return (
-                '<div class="crypto-row">' +
-                '<div class="crypto-row-head">' +
-                '<span class="crypto-label">' + escapeHtml(w.label || w.symbol || 'Wallet') + '</span>' +
-                '<button type="button" class="btn-copy js-cp" data-addr="' + escapeAttr(w.address) + '">Copy</button>' +
-                '</div>' +
-                '<div class="crypto-addr">' + escapeHtml(w.address) + '</div>' +
-                '</div>'
-              );
-            })
-            .join('');
-          list.onclick = function (e) {
-            var b = e.target.closest('.js-cp');
-            if (!b || !list.contains(b)) return;
-            e.preventDefault();
-            copyToClipboard(b.getAttribute('data-addr'), b);
-          };
-          tgL.href = tgUrlCryptoProof(v, tgUser, payCryptoWallets);
-        } else {
-          sec.hidden = true;
-          list.innerHTML = '';
-          list.onclick = null;
-          tgL.href = '#';
-        }
-
-        var payBtn = document.getElementById('dlg-pay-instant');
-        if (payBtn) {
-          payBtn.onclick = function () {
-            startCheckout(v.price, null, v.title, v.id, 'payjsr');
-          };
-        }
-
-        document.getElementById('dlg-pay').showModal();
-        syncModalBodyClass();
+        startCheckout(v.price, null, v.title, v.id);
       }
 
       document.getElementById('dlg-details').addEventListener('close', syncModalBodyClass);
@@ -1117,7 +1208,9 @@
         if (typeof UsdZar !== 'undefined') UsdZar.refresh(document);
         EBOOKS_ORIGIN = normalizeOrigin(EBOOKS_ORIGIN || '');
         var hints = [];
-        if (!EBOOKS_ORIGIN) hints.push('Set EBOOKS_SITE_URL or VITE_CHECKOUT_URL for checkout redirects.');
+        if (!LOCAL_CHECKOUT && !checkoutOrigin()) {
+          hints.push('Set PAYJSR_PAYMENT_LINKS on this host, or EBOOKS_SITE_URL for external checkout.');
+        }
         try {
           var hc = await fetch('/api/health').then(function (x) { return x.json(); });
           if (!hc.wasabi_signed_urls) {
