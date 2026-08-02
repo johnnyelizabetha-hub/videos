@@ -450,19 +450,6 @@
       color: var(--muted); text-align: center;
     }
     .pay-trust-note strong { color: var(--success); font-weight: 600; }
-    .fx-modal-box {
-      margin-top: 0.35rem; padding: 0.85rem 0.95rem;
-      border-radius: 10px; background: var(--surface); border: 1px solid var(--stroke);
-    }
-    .fx-modal-row {
-      display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
-      margin-bottom: 0.55rem;
-    }
-    .fx-modal-row-main { margin-bottom: 0.45rem; padding-top: 0.45rem; border-top: 1px solid var(--stroke); }
-    .fx-modal-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .fx-modal-usd { font-size: 1.05rem; font-weight: 700; color: var(--text); }
-    .fx-modal-zar { font-size: 1.45rem; font-weight: 700; color: var(--success); letter-spacing: -0.02em; }
-    .fx-modal-note { font-size: 0.72rem; color: var(--muted); line-height: 1.45; margin: 0; }
     .btn-ghost {
       background: var(--bg) !important; border-color: var(--stroke) !important; color: var(--text) !important;
     }
@@ -586,28 +573,6 @@
     <div class="dlg-b" id="dlg-d-body"></div>
   </dialog>
 
-  <dialog id="dlg-pay" class="dlg-modal" aria-labelledby="dlg-pay-heading">
-    <div class="dlg-h"><strong id="dlg-pay-heading">Confirm payment</strong><button type="button" class="dlg-x" data-close="p" aria-label="Close">×</button></div>
-    <div class="dlg-b">
-      <div class="pay-summary" id="dlg-pay-summary" aria-live="polite"></div>
-      <div class="fx-modal-box" id="dlg-fx-box">
-        <div class="fx-modal-row">
-          <span class="fx-modal-label">List price</span>
-          <span class="fx-modal-usd" id="dlg-fx-usd">—</span>
-        </div>
-        <div class="fx-modal-row fx-modal-row-main">
-          <span class="fx-modal-label">You pay (ZAR)</span>
-          <span class="fx-modal-zar" id="dlg-fx-zar">Loading…</span>
-        </div>
-        <p class="fx-modal-note">Card is charged in South African Rand. Rate updates live.</p>
-      </div>
-      <button type="button" class="btn btn-primary btn-block btn-pay-cta btn-buy" id="dlg-pay-instant" style="margin-top:0.85rem">
-        <span class="btn-buy-main">Get Now</span>
-      </button>
-      <p class="pay-trust-note">Secure checkout · Instant access after payment</p>
-    </div>
-  </dialog>
-
   <footer>
     <div class="trust-footer-row">
       <span>⚡ Instant Access</span>
@@ -618,7 +583,6 @@
   </footer>
 
   <script src="/js/purchase-toasts.js"></script>
-  <script src="/js/usd-zar.js"></script>
   <script>
     (function () {
       var EBOOKS_ORIGIN = '{{EBOOKS_SITE_URL}}';
@@ -788,11 +752,9 @@
 
       function buyBtnHtml(price) {
         var p = Number(price) || 0;
-        var zar = typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(p, 'btn-buy-zar') : '';
         return (
           '<button type="button" class="btn btn-primary btn-buy js-payopen">' +
             '<span class="btn-buy-main">Get Now · $' + p.toFixed(2) + '</span>' +
-            (zar ? '<span class="btn-buy-zar-wrap">' + zar + '</span>' : '') +
           '</button>'
         );
       }
@@ -812,116 +774,28 @@
         return 'https://t.me/share/url?url=&text=' + enc;
       }
 
-      function startCheckout(price, maskedName, displayTitle, videoId) {
-        openFxModal({
-          price: Number(price) || 0,
-          maskedName: maskedName,
-          displayTitle: displayTitle || 'Digital purchase',
-          videoId: videoId || '',
-        });
-      }
-
-      function startPromoCheckout() {
-        openFxModal({
-          price: 150,
-          maskedName: pickMaskedName(),
-          displayTitle: 'VIP Access - Full Collection',
-          videoId: '',
-          offerType: 'all_content',
-        });
-      }
-
-      var pendingCheckout = null;
-
-      function openFxModal(opts) {
-        pendingCheckout = opts || null;
-        var price = Number(opts && opts.price) || 0;
-        var title = (opts && opts.displayTitle) || 'Digital purchase';
-        document.body.classList.add('modal-dlg-open');
-        document.getElementById('dlg-pay-heading').textContent = 'Confirm payment';
-        var sum = document.getElementById('dlg-pay-summary');
-        sum.innerHTML =
-          '<div class="pay-summary-title">' + escapeHtml(title) + '</div>';
-        document.getElementById('dlg-fx-usd').textContent = '$' + price.toFixed(2) + ' USD';
-        var zarEl = document.getElementById('dlg-fx-zar');
-        zarEl.textContent = 'Loading…';
-        if (typeof UsdZar !== 'undefined') {
-          UsdZar.ensure(price).then(function (label) {
-            if (label) zarEl.textContent = label.replace(/^≈\s*/, '');
-            else zarEl.textContent = '≈ R' + Math.round(price * 18.5).toLocaleString('en-US');
-          }).catch(function () {
-            zarEl.textContent = '≈ R' + Math.round(price * 18.5).toLocaleString('en-US');
-          });
-        } else {
-          zarEl.textContent = '≈ R' + Math.round(price * 18.5).toLocaleString('en-US');
-        }
-
-        var payBtn = document.getElementById('dlg-pay-instant');
-        payBtn.disabled = false;
-        payBtn.querySelector('.btn-buy-main').textContent = 'Get Now';
-        payBtn.onclick = function () { confirmFxCheckout(); };
-
-        /* Prefetch PayJSR link + exact ZAR (local checkout only) */
-        var baseCheckout = checkoutUrl(price, opts.maskedName, title, opts.videoId);
-        pendingCheckout.fetchUrl = '';
-        pendingCheckout.checkoutUrl = '';
-        if (LOCAL_CHECKOUT && baseCheckout) {
-          try {
-            var u = new URL(baseCheckout, window.location.origin);
-            if (opts.offerType) u.searchParams.set('offer_type', opts.offerType);
-            u.searchParams.set('format', 'json');
-            pendingCheckout.fetchUrl = u.toString();
-          } catch (e) {
-            pendingCheckout.fetchUrl = baseCheckout + (baseCheckout.indexOf('?') >= 0 ? '&' : '?') + 'format=json';
-          }
-        }
-        if (pendingCheckout.fetchUrl) {
-          fetch(pendingCheckout.fetchUrl, { headers: { Accept: 'application/json' } })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-              if (!pendingCheckout || !data || !data.ok) return;
-              pendingCheckout.checkoutUrl = data.checkout_url;
-              if (data.amount_zar != null) {
-                zarEl.textContent = 'R' + Number(data.amount_zar).toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                });
-              }
-            })
-            .catch(function () {});
-        }
-
-        document.getElementById('dlg-pay').showModal();
-        syncModalBodyClass();
-      }
-
-      function confirmFxCheckout() {
-        var opts = pendingCheckout;
-        if (!opts) return;
-        var payBtn = document.getElementById('dlg-pay-instant');
-        if (opts.checkoutUrl) {
-          payBtn.disabled = true;
-          payBtn.querySelector('.btn-buy-main').textContent = 'Redirecting…';
-          window.location.href = opts.checkoutUrl;
-          return;
-        }
-        var url = checkoutUrl(opts.price, opts.maskedName, opts.displayTitle, opts.videoId);
+      function redirectCheckout(price, maskedName, displayTitle, videoId, extra) {
+        var url = checkoutUrl(price, maskedName, displayTitle || 'Digital purchase', videoId);
         if (!url) {
-          alert(LOCAL_CHECKOUT
-            ? 'Checkout is not configured. Set PAYJSR_PAYMENT_LINKS.'
-            : 'Checkout is not configured. Set EBOOKS_SITE_URL.');
+          alert('Checkout is not configured. Set EBOOKS_SITE_URL.');
           return;
         }
-        if (opts.offerType) {
+        if (extra && extra.offerType) {
           try {
             var u = new URL(url, window.location.origin);
-            u.searchParams.set('offer_type', opts.offerType);
+            u.searchParams.set('offer_type', extra.offerType);
             url = u.pathname + '?' + u.searchParams.toString();
           } catch (e) {}
         }
-        payBtn.disabled = true;
-        payBtn.querySelector('.btn-buy-main').textContent = 'Redirecting…';
         window.location.href = url;
+      }
+
+      function startCheckout(price, maskedName, displayTitle, videoId) {
+        redirectCheckout(price, maskedName, displayTitle, videoId);
+      }
+
+      function startPromoCheckout() {
+        redirectCheckout(150, pickMaskedName(), 'VIP Access - Full Collection', '', { offerType: 'all_content' });
       }
 
       function setErr(t) {
@@ -1060,9 +934,7 @@
           var metaDate = escapeHtml(formatDateRel(v.created_at)) || '—';
           var badgeTop = isFree
             ? '<span class="badge-price">Free</span>'
-            : '<span class="badge-price"><em>$</em>' + price.toFixed(2) +
-              (typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(price) : '') +
-              '</span>';
+            : '<span class="badge-price"><em>$</em>' + price.toFixed(2) + '</span>';
           var httpPoster = '';
           if (v.thumbnail_url && /^https?:\/\//i.test(String(v.thumbnail_url).trim())) {
             httpPoster = String(v.thumbnail_url).trim();
@@ -1099,9 +971,7 @@
               (!isFree
                 ? '<div class="price-row">' +
                     '<span class="price-row-label">Price</span>' +
-                    '<span class="price-row-amt">$' + price.toFixed(2) + '<small>USD</small>' +
-                    (typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(price) : '') +
-                    '</span>' +
+                    '<span class="price-row-amt">$' + price.toFixed(2) + '<small>USD</small></span>' +
                   '</div>'
                 : '') +
             '</div>';
@@ -1121,7 +991,7 @@
           var po = el.querySelector('.js-payopen');
           if (po) po.addEventListener('click', function (e) {
             e.stopPropagation();
-            startCheckout(v.price, null, v.title, v.id, 'payjsr');
+            startCheckout(v.price, null, v.title, v.id);
           });
 
           g.appendChild(el);
@@ -1129,7 +999,6 @@
 
         if (!isPlaceholder) {
           hydrateThumbs();
-          if (typeof UsdZar !== 'undefined') UsdZar.refresh(g);
         }
       }
 
@@ -1166,9 +1035,7 @@
 
       function syncModalBodyClass() {
         var d1 = document.getElementById('dlg-details');
-        var d2 = document.getElementById('dlg-pay');
-        var open = (d1 && d1.open) || (d2 && d2.open);
-        document.body.classList.toggle('modal-dlg-open', !!open);
+        document.body.classList.toggle('modal-dlg-open', !!(d1 && d1.open));
       }
 
       function openDetails(v) {
@@ -1185,9 +1052,7 @@
           (!v.is_free
             ? '<div class="price-row" style="border-top:none;padding-top:0;margin-top:0;margin-bottom:0.75rem">' +
               '<span class="price-row-label">Price</span>' +
-              '<span class="price-row-amt">$' + Number(v.price).toFixed(2) + '<small>USD</small>' +
-              (typeof UsdZar !== 'undefined' ? UsdZar.zarSpan(v.price) : '') +
-              '</span>' +
+              '<span class="price-row-amt">$' + Number(v.price).toFixed(2) + '<small>USD</small></span>' +
               '</div>'
             : '') +
           '<div style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.45rem">' +
@@ -1197,11 +1062,10 @@
           '<a class="btn" href="' + escapeAttr(watchPageUrl(v.id)) + '">Preview free clip</a>' +
           telegramBtnHtml(tgUrlForVideo(v, tgUser)) +
           '</div>';
-        if (typeof UsdZar !== 'undefined') UsdZar.refresh(d);
         var bp = d.querySelector('.js-dpay');
         if (bp) bp.addEventListener('click', function () {
           d.close();
-          startCheckout(v.price, null, v.title, v.id, 'payjsr');
+          startCheckout(v.price, null, v.title, v.id);
         });
         d.showModal();
         syncModalBodyClass();
@@ -1212,12 +1076,8 @@
       }
 
       document.getElementById('dlg-details').addEventListener('close', syncModalBodyClass);
-      document.getElementById('dlg-pay').addEventListener('close', syncModalBodyClass);
       document.querySelector('#dlg-details .dlg-x').addEventListener('click', function () {
         document.getElementById('dlg-details').close();
-      });
-      document.querySelector('#dlg-pay .dlg-x').addEventListener('click', function () {
-        document.getElementById('dlg-pay').close();
       });
       document.getElementById('search').addEventListener('input', function () {
         renderGrid(filterList(this.value), false);
@@ -1225,11 +1085,10 @@
 
       async function boot() {
         parseUrlParams();
-        if (typeof UsdZar !== 'undefined') UsdZar.refresh(document);
         EBOOKS_ORIGIN = normalizeOrigin(EBOOKS_ORIGIN || '');
         var hints = [];
-        if (!LOCAL_CHECKOUT && !checkoutOrigin()) {
-          hints.push('Set PAYJSR_PAYMENT_LINKS on this host, or EBOOKS_SITE_URL for external checkout.');
+        if (!checkoutOrigin()) {
+          hints.push('Set EBOOKS_SITE_URL for checkout.');
         }
         try {
           var hc = await fetch('/api/health').then(function (x) { return x.json(); });
@@ -1279,7 +1138,6 @@
           PurchaseToasts.setVideos(allVideos);
           PurchaseToasts.start({ videos: allVideos });
         }
-        if (typeof UsdZar !== 'undefined') UsdZar.refresh(document);
       }
 
       boot().catch(function (e) {
