@@ -439,6 +439,12 @@
         if (LOCAL_CHECKOUT) return window.location.origin;
         return normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
       }
+      function checkoutMethod() {
+        return LOCAL_CHECKOUT ? 'payjsr' : 'whop';
+      }
+      function checkoutApiPath() {
+        return LOCAL_CHECKOUT ? '/api/payjsr-checkout' : '/api/paypal-checkout';
+      }
       var MASKED_PRODUCT_NAME = 'Digital Ebook';
       function pickMaskedName(custom) {
         if (custom && String(custom).trim()) return String(custom).trim();
@@ -571,14 +577,15 @@
         p2.set('success_url', successUrl);
         p2.set('product_name', masked);
         p2.set('display_title', displayTitle || 'Digital purchase');
-        p2.set('method', method || 'payjsr');
+        p2.set('method', method || checkoutMethod());
         if (videoId) p2.set('video_id', videoId);
         var tgCheckout = (tgUser || TG_ENV || '').replace(/^@/, '').trim();
         if (tgCheckout) p2.set('telegram_username', tgCheckout);
+        var apiPath = checkoutApiPath();
         var cancelP = new URLSearchParams(p2.toString());
         cancelP.set('payment_canceled', 'true');
-        p2.set('cancel_url', origin + '/api/payjsr-checkout?' + cancelP.toString());
-        return origin + '/api/payjsr-checkout?' + p2.toString();
+        p2.set('cancel_url', origin + apiPath + '?' + cancelP.toString());
+        return origin + apiPath + '?' + p2.toString();
       }
       function tgUrlForVideo(v) {
         var enc = encodeURIComponent('Hello, I\'d like to purchase: ' + v.title + ' ($' + Number(v.price).toFixed(2) + ')');
@@ -618,14 +625,19 @@
             window.location.href = pendingCheckout.checkoutUrl;
             return;
           }
-          var url = checkoutUrl(opts.price, opts.maskedName, title, opts.videoId, 'payjsr');
-          if (!url) { alert('Checkout is not configured.'); return; }
+          var url = checkoutUrl(opts.price, opts.maskedName, title, opts.videoId);
+          if (!url) {
+            alert(LOCAL_CHECKOUT
+              ? 'Checkout is not configured. Set PAYJSR_PAYMENT_LINKS.'
+              : 'Checkout is not configured. Set EBOOKS_SITE_URL.');
+            return;
+          }
           go.disabled = true;
           go.textContent = 'Redirecting…';
           window.location.href = url;
         };
-        var base = checkoutUrl(price, opts.maskedName, title, opts.videoId, 'payjsr');
-        if (base) {
+        var base = checkoutUrl(price, opts.maskedName, title, opts.videoId);
+        if (LOCAL_CHECKOUT && base) {
           try {
             var u = new URL(base, window.location.origin);
             u.searchParams.set('format', 'json');

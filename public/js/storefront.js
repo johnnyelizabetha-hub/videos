@@ -22,6 +22,10 @@
     return origin + '/?' + p.toString();
   }
 
+  function checkoutMethodForOrigin(ebooksOrigin) {
+    return ebooksOrigin ? 'whop' : 'payjsr';
+  }
+
   function checkoutQuery(ebooksOrigin, price, maskedName, displayTitle, videoId, method, extra) {
     var origin = normalizeOrigin(String(ebooksOrigin || '').trim().replace(/\/+$/, ''));
     if (!origin) return null;
@@ -36,7 +40,7 @@
     p.set('success_url', successUrl);
     p.set('product_name', masked);
     p.set('display_title', title);
-    p.set('method', method || 'payjsr');
+    p.set('method', method || checkoutMethodForOrigin(origin));
     if (vid) p.set('video_id', vid);
     if (extra) {
       Object.keys(extra).forEach(function (k) {
