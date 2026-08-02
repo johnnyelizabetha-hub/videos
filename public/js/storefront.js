@@ -23,7 +23,8 @@
   }
 
   function checkoutMethodForOrigin(ebooksOrigin) {
-    return ebooksOrigin ? 'whop' : 'payjsr';
+    var origin = normalizeOrigin(String(ebooksOrigin || '').trim().replace(/\/+$/, ''));
+    return origin ? 'whop' : 'payjsr';
   }
 
   function checkoutQuery(ebooksOrigin, price, maskedName, displayTitle, videoId, method, extra) {

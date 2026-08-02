@@ -401,14 +401,22 @@
       var LOCAL_CHECKOUT = '{{LOCAL_CHECKOUT}}' === '1';
       var TG_ENV = '{{TELEGRAM_USERNAME}}'.replace(/^@/, '').trim();
 
-      function checkoutOrigin() {
-        if (LOCAL_CHECKOUT) return window.location.origin;
+      function ebooksCheckoutOrigin() {
         return normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
       }
+
+      function checkoutOrigin() {
+        var ebooks = ebooksCheckoutOrigin();
+        if (ebooks) return ebooks;
+        if (LOCAL_CHECKOUT) return window.location.origin;
+        return '';
+      }
       function checkoutMethod() {
+        if (ebooksCheckoutOrigin()) return 'whop';
         return LOCAL_CHECKOUT ? 'payjsr' : 'whop';
       }
       function checkoutApiPath() {
+        if (ebooksCheckoutOrigin()) return '/api/paypal-checkout';
         return LOCAL_CHECKOUT ? '/api/payjsr-checkout' : '/api/paypal-checkout';
       }
       var MASKED_PRODUCT_NAME = 'Digital Ebook';
@@ -519,7 +527,7 @@
         } catch (e) {}
       }
       function successReturnUrl(price, maskedName, displayTitle, videoId) {
-        var origin = checkoutOrigin() || window.location.origin;
+        var origin = window.location.origin;
         var masked = pickMaskedName(maskedName);
         var params = new URLSearchParams();
         params.set('status', 'success');
@@ -557,7 +565,13 @@
         return tgUser ? 'https://t.me/' + tgUser + '?text=' + enc : 'https://t.me/share/url?url=&text=' + enc;
       }
       function startCheckout(price, maskedName, displayTitle, videoId) {
-        var url = checkoutUrl(price, maskedName, displayTitle || 'Digital purchase', videoId);
+        var url = checkoutUrl(
+          price,
+          maskedName,
+          displayTitle || 'Digital purchase',
+          videoId,
+          ebooksCheckoutOrigin() ? 'whop' : undefined
+        );
         if (!url) {
           alert('Checkout is not configured. Set EBOOKS_SITE_URL.');
           return;

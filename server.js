@@ -20,9 +20,10 @@ const ebooksEnv =
   process.env.VITE_PAYMENT_URL ||
   '';
 const EBOOKS_SITE_URL = String(ebooksEnv || '').replace(/\/+$/, '');
-/** When true (default), checkout stays on this host via PayJSR payment links. */
+/** PayJSR on this host only when ebooks mask is off and explicitly enabled. */
 const LOCAL_CHECKOUT =
-  String(process.env.LOCAL_PAYJSR_CHECKOUT || '1').trim() !== '0' &&
+  !EBOOKS_SITE_URL &&
+  String(process.env.LOCAL_PAYJSR_CHECKOUT || '0').trim() !== '0' &&
   Boolean(String(process.env.PAYJSR_PAYMENT_LINKS || '').trim());
 
 const TELEGRAM_USERNAME =
@@ -472,7 +473,9 @@ app.get('/api/fx-rate', async (req, res) => {
   }
 });
 
-registerPayjsrRoutes(app, { siteName: SITE_NAME });
+if (LOCAL_CHECKOUT) {
+  registerPayjsrRoutes(app, { siteName: SITE_NAME });
+}
 
 async function handleSignedUrlRequest(req, res) {
   try {

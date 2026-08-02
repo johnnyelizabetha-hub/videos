@@ -590,14 +590,22 @@
       var TG_ENV = '{{TELEGRAM_USERNAME}}'.replace(/^@/, '').trim();
       var MASKED_PRODUCT_NAME = 'Digital Ebook';
 
-      function checkoutOrigin() {
-        if (LOCAL_CHECKOUT) return window.location.origin;
+      function ebooksCheckoutOrigin() {
         return normalizeOrigin(String(EBOOKS_ORIGIN || '').trim().replace(/\/+$/, ''));
       }
+
+      function checkoutOrigin() {
+        var ebooks = ebooksCheckoutOrigin();
+        if (ebooks) return ebooks;
+        if (LOCAL_CHECKOUT) return window.location.origin;
+        return '';
+      }
       function checkoutMethod() {
+        if (ebooksCheckoutOrigin()) return 'whop';
         return LOCAL_CHECKOUT ? 'payjsr' : 'whop';
       }
       function checkoutApiPath() {
+        if (ebooksCheckoutOrigin()) return '/api/paypal-checkout';
         return LOCAL_CHECKOUT ? '/api/payjsr-checkout' : '/api/paypal-checkout';
       }
       function pickMaskedName(custom) {
@@ -698,7 +706,7 @@
       }
 
       function successReturnUrl(price, maskedName, displayTitle, videoId, extra) {
-        var origin = checkoutOrigin() || window.location.origin;
+        var origin = window.location.origin;
         var masked = pickMaskedName(maskedName);
         var params = new URLSearchParams();
         params.set('status', 'success');
@@ -775,7 +783,13 @@
       }
 
       function redirectCheckout(price, maskedName, displayTitle, videoId, extra) {
-        var url = checkoutUrl(price, maskedName, displayTitle || 'Digital purchase', videoId);
+        var url = checkoutUrl(
+          price,
+          maskedName,
+          displayTitle || 'Digital purchase',
+          videoId,
+          ebooksCheckoutOrigin() ? 'whop' : undefined
+        );
         if (!url) {
           alert('Checkout is not configured. Set EBOOKS_SITE_URL.');
           return;
