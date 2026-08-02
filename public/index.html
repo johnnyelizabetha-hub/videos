@@ -798,7 +798,7 @@
           try {
             var u = new URL(url, window.location.origin);
             u.searchParams.set('offer_type', extra.offerType);
-            url = u.pathname + '?' + u.searchParams.toString();
+            url = u.toString();
           } catch (e) {}
         }
         window.location.href = url;
