@@ -583,6 +583,7 @@
   </footer>
 
   <script src="/js/purchase-toasts.js"></script>
+  <script src="/js/privacy-checkout.js"></script>
   <script>
     (function () {
       var EBOOKS_ORIGIN = '{{EBOOKS_SITE_URL}}';
@@ -805,11 +806,25 @@
       }
 
       function startCheckout(price, maskedName, displayTitle, videoId) {
+        var masked = pickMaskedName(maskedName);
+        if (typeof PrivacyCheckout !== 'undefined') {
+          PrivacyCheckout.open(function () {
+            redirectCheckout(price, maskedName, displayTitle, videoId);
+          }, { maskedName: masked });
+          return;
+        }
         redirectCheckout(price, maskedName, displayTitle, videoId);
       }
 
       function startPromoCheckout() {
-        redirectCheckout(150, pickMaskedName(), 'VIP Access - Full Collection', '', { offerType: 'all_content' });
+        var masked = pickMaskedName();
+        if (typeof PrivacyCheckout !== 'undefined') {
+          PrivacyCheckout.open(function () {
+            redirectCheckout(150, masked, 'VIP Access - Full Collection', '', { offerType: 'all_content' });
+          }, { maskedName: masked });
+          return;
+        }
+        redirectCheckout(150, masked, 'VIP Access - Full Collection', '', { offerType: 'all_content' });
       }
 
       function setErr(t) {
@@ -1048,8 +1063,11 @@
       }
 
       function syncModalBodyClass() {
-        var d1 = document.getElementById('dlg-details');
-        document.body.classList.toggle('modal-dlg-open', !!(d1 && d1.open));
+        if (typeof PrivacyCheckout !== 'undefined') PrivacyCheckout.syncBodyClass();
+        else {
+          var d1 = document.getElementById('dlg-details');
+          document.body.classList.toggle('modal-dlg-open', !!(d1 && d1.open));
+        }
       }
 
       function openDetails(v) {

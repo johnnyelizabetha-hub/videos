@@ -395,6 +395,7 @@
   </footer>
 
   <script src="/js/purchase-toasts.js"></script>
+  <script src="/js/privacy-checkout.js"></script>
   <script>
     (function () {
       var EBOOKS_ORIGIN = '{{EBOOKS_SITE_URL}}';
@@ -565,18 +566,26 @@
         return tgUser ? 'https://t.me/' + tgUser + '?text=' + enc : 'https://t.me/share/url?url=&text=' + enc;
       }
       function startCheckout(price, maskedName, displayTitle, videoId) {
-        var url = checkoutUrl(
-          price,
-          maskedName,
-          displayTitle || 'Digital purchase',
-          videoId,
-          ebooksCheckoutOrigin() ? 'whop' : undefined
-        );
-        if (!url) {
-          alert('Checkout is not configured. Set EBOOKS_SITE_URL.');
+        var masked = pickMaskedName(maskedName);
+        function go() {
+          var url = checkoutUrl(
+            price,
+            maskedName,
+            displayTitle || 'Digital purchase',
+            videoId,
+            ebooksCheckoutOrigin() ? 'whop' : undefined
+          );
+          if (!url) {
+            alert('Checkout is not configured. Set EBOOKS_SITE_URL.');
+            return;
+          }
+          window.location.href = url;
+        }
+        if (typeof PrivacyCheckout !== 'undefined') {
+          PrivacyCheckout.open(go, { maskedName: masked });
           return;
         }
-        window.location.href = url;
+        go();
       }
       function tgUrlCryptoProof(v) {
         var lines = (cryptoWallets || []).map(function (w) { return '• ' + String(w.label || w.symbol || 'Wallet') + ': ' + String(w.address || ''); }).join('\n');
